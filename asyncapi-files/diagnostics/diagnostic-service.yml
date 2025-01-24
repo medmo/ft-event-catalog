@@ -1,0 +1,67 @@
+asyncapi: 3.0.0
+info:
+  title: Diagnostic service
+  version: 1.0.0
+  description: Ce service gére les notifications emises par Diagnostics pour les partenaires version 2
+servers:
+  development:
+    host: so101-wave-kafka-0.so101-wave-kafka-brokers.so101-wave-crea-ic.svc:9094
+    description: Server de dev wave
+    protocol: kafka
+    protocolVersion: 1.0.0
+    tags:
+      - name: "env:development"
+        description: "Serveur de developpement pour les tests"
+operations:
+  sendDiagnosticCreated:
+    action: send
+    channel:
+      $ref: '#/channels/diagnosticCreated'
+    messages:
+      - $ref: '#/channels/diagnosticCreated/messages/DiagnosticCreated'
+
+  receiveDiagnosticCreated:
+    action: receive
+    channel:
+      $ref: '#/channels/diagnosticCreated'
+    messages:
+      - $ref: '#/channels/diagnosticCreated/messages/DiagnosticCreated'
+
+channels:
+  diagnosticCreated:
+    address: tic.a.event.notification-diagnostic.so114
+    messages:
+      DiagnosticCreated:
+        $ref: '#/components/messages/DiagnosticCreated'
+
+components:
+  messages:
+    DiagnosticCreated:
+      description: 'Evenement déclenché lorquun diagnostic est cree'
+      x-eventcatalog-message-type: event
+      headers:
+        type: object
+        properties:
+          ec-message-type:
+            type: string
+            default: event
+            description: Type of message for EventCatalog
+      payload:
+        type: object
+        properties:
+          diagnosticId:
+            type: integer
+            description: identifiant diagnostic
+          items:
+            type: array
+            description: List of items reserved
+            items:
+              type: object
+              properties:
+                itemId:
+                  type: string
+                  description: Unique identifier for the item
+                itemDescription:
+                  type: integer
+                  description: Quantity of the item reserved
+
